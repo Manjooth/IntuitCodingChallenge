@@ -8,10 +8,8 @@
 - Manager inherits from Employee
 - CEO inherits from Employee
 
-If we have many employees in a company in which a few of them are
-managers. If the managers are all essentially the same as employees, except perhaps that
-the have direct reports, then there is no need to create any new classes with repeat attributes. The
-Employee class is sufficient to represent them. The manager will have additional attributes such as e.g. subordinates
+If we have many employees in a company in which a few of them are managers. If the managers are all essentially the same as employees, except perhaps that
+the have direct reports, then there is no need to create any new classes with repeat attributes.
 
 ## Operations:
 ### Changing teams (implemented)
