@@ -257,6 +257,7 @@ class OrganisationTest
         String result = organisation.promote(6l, 4l, true, "Manager");
 
         assertEquals(SUCCESS, result);
+        assertEquals("Manager", organisation.getManager(6l).get().getRole());
     }
 
     @Test
@@ -269,14 +270,79 @@ class OrganisationTest
     }
 
     @Test
-    void shouldBeAbleToPromoteIfManagerHas20DirectReportsAnd2ManagersBelowThem()
+    void shouldReturnErrorIfManagerDoesNotHave2ManagersBelowThem()
     {
+        organisation.addManager("J", "B", "Manager", new Date(), false, 13l, 100l, false);
+        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        String response = organisation.promote(13l, 101l, false, "Director");
 
+        assertEquals("Manager is not able to be promoted to Director", response);
     }
 
     @Test
-    void shouldBeAbleToPromoteIfDirectorHas40DirectReportsAnd4ManagersBelowThem()
+    void shouldReturnErrorIfManagerDoesNotHave20EmployeesBelowThem()
     {
+        organisation.addManager("J", "B", "Manager", new Date(), false, 13l, 100l, false);
+        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("F", "G", "Manager", new Date(), false, 15l, 13l, false);
 
+        organisation.addTeam("teamThree",14l, Arrays.asList(30l, 31l, 32l));
+
+        String response = organisation.promote(13l, 101l, false, "Director");
+        assertEquals("Manager is not able to be promoted to Director", response);
+    }
+
+    @Test
+    void shouldReturnSuccessAndPromoteIfManagerHas20DirectReportsAnd2ManagersBelowThem()
+    {
+        organisation.addManager("J", "B", "Manager", new Date(), false, 13l, 100l, false);
+        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("F", "G", "Manager", new Date(), false, 15l, 13l, false);
+
+        organisation.addTeam("teamThree",14l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
+        organisation.addTeam("teamFour",15l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
+
+        String response = organisation.promote(13l, 101l, false, "Director");
+        assertEquals(SUCCESS, response);
+        assertEquals("Director", organisation.getManager(13l).get().getRole());
+    }
+
+    @Test
+    void shouldReturnErrorIfDirectorDoesNotHave4ManagersBelowThem()
+    {
+        organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
+        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        String response = organisation.promote(13l, 101l, false, "Vice President");
+
+        assertEquals("Director is not able to be promoted to Vice President", response);
+    }
+
+    @Test
+    void shouldReturnErrorIfManagerDoesNotHave40EmployeesBelowThem()
+    {
+        organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
+        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        String response = organisation.promote(13l, 101l, false, "Vice President");
+
+        assertEquals("Director is not able to be promoted to Vice President", response);
+    }
+
+    @Test
+    void shouldReturnSuccessAndPromoteIfDirectorHas40DirectReportsAnd4ManagersBelowThem()
+    {
+        organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
+        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("F", "G", "Manager", new Date(), false, 15l, 13l, false);
+        organisation.addManager("F", "G", "Manager", new Date(), false, 16l, 13l, false);
+        organisation.addManager("F", "G", "Manager", new Date(), false, 17l, 13l, false);
+
+        organisation.addTeam("teamThree",14l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
+        organisation.addTeam("teamFour",15l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
+        organisation.addTeam("teamFive",16l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
+        organisation.addTeam("teamSix",17l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
+
+        String response = organisation.promote(13l, 101l, false, "Vice President");
+        assertEquals(SUCCESS, response);
+        assertEquals("Vice President", organisation.getManager(13l).get().getRole());
     }
 }

@@ -166,9 +166,9 @@ public class Organisation {
         if(isEmployee){
             // Optional is null safe
             Optional<Employee> employeeToPromote = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
-            if(!employeeToPromote.isEmpty()){
+            if(employeeToPromote.isPresent()){
                 employees.remove(employeeToPromote.get());
-                managers.add(new Manager(
+                String response = addManager(
                         employeeToPromote.get().getFirstName(),
                         employeeToPromote.get().getLastName(),
                         newRole,
@@ -177,15 +177,36 @@ public class Organisation {
                         employeeToPromote.get().getEmployeeNumber(),
                         newManagerNumber,
                         employeeToPromote.get().isOnHoliday()
-                ));
+                );
+
+                return response;
             }
-        }else{
+        }
+        else
+        {
             Optional<Manager> managerToPromote = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
-            if(!managerToPromote.isEmpty()){
-                if(managerToPromote.get().getRole().equals("Vice President")){
+            if(managerToPromote.isPresent())
+            {
+                if(managerToPromote.get().getRole().equals("Vice President"))
+                {
                     return "Invalid - cannot promote VP";
                 }
-
+                else if(managerToPromote.get().getRole().equals("Manager"))
+                {
+                    List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
+                    if(!(managerList.size() >= 2) ||!(getNoOfSubordinateEmployees(managerList) >= 20))
+                    {
+                        return "Manager is not able to be promoted to Director";
+                    }
+                }
+                else if(managerToPromote.get().getRole().equals("Director"))
+                {
+                    List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
+                    if(!(managerList.size() >= 4) ||!(getNoOfSubordinateEmployees(managerList) >= 40))
+                    {
+                        return "Director is not able to be promoted to Vice President";
+                    }
+                }
 
                 managerToPromote.get().setRole(newRole);
                 managerToPromote.get().setManagerNumber(newManagerNumber);
@@ -195,6 +216,12 @@ public class Organisation {
         return SUCCESS;
     }
 
+    public Optional<Manager> getManager(final Long employeeNumber)
+    { // test method helper
+        Optional<Manager> maybeManager = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
+
+        return maybeManager;
+    }
 
     private boolean checkEmployeeNumberIsUnique(final long employeeNumber) {
         return employees.stream().noneMatch(employee -> employee.getEmployeeNumber() == employeeNumber)
@@ -273,5 +300,27 @@ public class Organisation {
     private void setEmployeeHoliday(final long employeeNumber, final boolean setOnHoliday) {
         Optional<Employee> employeeToGoOnHoliday = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
         employeeToGoOnHoliday.ifPresent(employee -> employee.setOnHoliday(setOnHoliday));
+    }
+
+    private List<Long> getNoOfSubordinateManagers(final long employeeNumber) {
+        return managers
+                .stream()
+                .filter(manager -> manager.getManagerNumber() == employeeNumber)
+                .map(Employee::getEmployeeNumber)
+                .collect(Collectors.toList());
+    }
+
+    private int getNoOfSubordinateEmployees(List<Long> managerList) {
+        int count = 0;
+
+        for(long id : managerList){
+            for(Team t : teams){
+                if(t.getManagerEmployeeId() == id){
+                    count += t.getTeamMembersIds().size();
+                }
+            }
+        }
+
+        return count;
     }
 }
