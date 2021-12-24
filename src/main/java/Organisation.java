@@ -166,7 +166,7 @@ public class Organisation {
         if(isEmployee){
             // Optional is null safe
             Optional<Employee> employeeToPromote = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
-            if(employeeToPromote.isPresent()){
+            if(!employeeToPromote.isEmpty()){
                 employees.remove(employeeToPromote.get());
                 String response = addManager(
                         employeeToPromote.get().getFirstName(),
