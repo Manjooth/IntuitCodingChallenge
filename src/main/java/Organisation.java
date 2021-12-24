@@ -310,7 +310,7 @@ public class Organisation {
                 .collect(Collectors.toList());
     }
 
-    private int getNoOfSubordinateEmployees(List<Long> managerList) {
+    private int getNoOfSubordinateEmployees(final List<Long> managerList) {
         int count = 0;
 
         for(long id : managerList){
