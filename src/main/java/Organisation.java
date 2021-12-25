@@ -311,16 +311,13 @@ public class Organisation {
     }
 
     private int getNoOfSubordinateEmployees(final List<Long> managerList) {
-        int count = 0;
-
-        for(long id : managerList){
-            for(Team t : teams){
-                if(t.getManagerEmployeeId() == id){
-                    count += t.getTeamMembersIds().size();
-                }
-            }
-        }
-
-        return count;
+        return teams
+                .stream()
+                .filter(team -> managerList.contains(team.getManagerEmployeeId()))
+                .map(team -> team.getTeamMembersIds().size())
+                .collect(Collectors.toList())
+                .stream()
+                .mapToInt(Integer::intValue)
+                .sum();
     }
 }
