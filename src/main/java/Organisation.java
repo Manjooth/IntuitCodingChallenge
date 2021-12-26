@@ -11,6 +11,14 @@ public class Organisation {
     private final List<Manager> managers = new ArrayList<>();
     private final List<Team> teams = new ArrayList<>();
 
+    enum ROLE_NAMES_ENUM
+    {
+        Manager,
+        Director,
+        VicePresident,
+        CEO
+    }
+
     public Organisation(final CEO ceo) {
         this.ceo = ceo;
     }
@@ -187,11 +195,11 @@ public class Organisation {
             Optional<Manager> managerToPromote = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
             if(managerToPromote.isPresent())
             {
-                if(managerToPromote.get().getRole().equals("Vice President"))
+                if(managerToPromote.get().getRole().equals(ROLE_NAMES_ENUM.VicePresident.name()))
                 {
                     return "Invalid - cannot promote VP";
                 }
-                else if(managerToPromote.get().getRole().equals("Manager"))
+                else if(managerToPromote.get().getRole().equals(ROLE_NAMES_ENUM.Manager.name()))
                 {
                     List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
                     if(!(managerList.size() >= 2) ||!(getNoOfSubordinateEmployees(managerList) >= 20))
@@ -199,7 +207,7 @@ public class Organisation {
                         return "Manager is not able to be promoted to Director";
                     }
                 }
-                else if(managerToPromote.get().getRole().equals("Director"))
+                else if(managerToPromote.get().getRole().equals(ROLE_NAMES_ENUM.Director.name()))
                 {
                     List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
                     if(!(managerList.size() >= 4) ||!(getNoOfSubordinateEmployees(managerList) >= 40))
@@ -237,8 +245,7 @@ public class Organisation {
     }
 
     private boolean checkIfManagerRoleIsCorrect(final String role) {
-        String[] roles = new String[]{"Manager", "Director", "Vice President", "CEO"};
-        return Arrays.stream(roles).anyMatch(role::contains);
+        return Arrays.stream(ROLE_NAMES_ENUM.values()).anyMatch(role_name -> role_name.name().equals(role));
     }
 
     private boolean checkTeamNameIsUnique(final String teamName) {

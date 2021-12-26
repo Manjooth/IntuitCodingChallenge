@@ -107,7 +107,7 @@ class OrganisationTest
     {
         final String result1 = organisation.addManager("Manjooth", "Kler", "Manager", new Date(), false, 2l, 3l, false);
         final String result2 = organisation.addManager("Manjooth", "Kler", "Director", new Date(), false, 22l, 3l, false);
-        final String result3 = organisation.addManager("Manjooth", "Kler", "Vice President", new Date(), false, 23l, 3l, false);
+        final String result3 = organisation.addManager("Manjooth", "Kler", "VicePresident", new Date(), false, 23l, 3l, false);
 
         assertEquals(SUCCESS, result1);
         assertEquals(SUCCESS, result2);
@@ -263,7 +263,7 @@ class OrganisationTest
     @Test
     void shouldReturnErrorWhenTryingToPromoteVicePresident()
     {
-        organisation.addManager("Vince", "Marlow", "Vice President", new Date(), false, 5l, 100l, false);
+        organisation.addManager("Vince", "Marlow", "VicePresident", new Date(), false, 5l, 100l, false);
         String result = organisation.promote(5l, 100l, false, "CEO");
 
         assertEquals("Invalid - cannot promote VP", result);
@@ -312,7 +312,7 @@ class OrganisationTest
     {
         organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
         organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
-        String response = organisation.promote(13l, 101l, false, "Vice President");
+        String response = organisation.promote(13l, 101l, false, "VicePresident");
 
         assertEquals("Director is not able to be promoted to Vice President", response);
     }
@@ -322,7 +322,7 @@ class OrganisationTest
     {
         organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
         organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
-        String response = organisation.promote(13l, 101l, false, "Vice President");
+        String response = organisation.promote(13l, 101l, false, "VicePresident");
 
         assertEquals("Director is not able to be promoted to Vice President", response);
     }
@@ -341,8 +341,8 @@ class OrganisationTest
         organisation.addTeam("teamFive",16l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
         organisation.addTeam("teamSix",17l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
 
-        String response = organisation.promote(13l, 101l, false, "Vice President");
+        String response = organisation.promote(13l, 101l, false, "VicePresident");
         assertEquals(SUCCESS, response);
-        assertEquals("Vice President", organisation.getManager(13l).get().getRole());
+        assertEquals("VicePresident", organisation.getManager(13l).get().getRole());
     }
 }
