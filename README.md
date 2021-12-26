@@ -27,7 +27,7 @@ employee's manager temporarily.
 When an employee comes back from holidays, all their subordinates come back
 to report to them, unless they have moved teams.
  
-### Promotions (partially implemented)
+### Promotions (implemented)
 - When an employee is promoted, they effectively become a peer of their former
 manager. Unfortunately, there is a single CEO for the company, so it is not
 possible to promote one of the CEO’s subordinates.
