@@ -112,6 +112,9 @@ public class Organisation
             }
         }
 
+        assert nextTeam != null;
+        assert previousTeam != null;
+
         nextTeam.addMember(employeeNumber);
         previousTeam.setManagerEmployeeId(-1L);
         previousTeam.removeMember(employeeNumber);
@@ -182,10 +185,11 @@ public class Organisation
         {
             // Optional is null safe
             final Optional<Employee> employeeToPromote = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
-            if(!employeeToPromote.isEmpty())
+            if(employeeToPromote.isPresent())
             {
                 employees.remove(employeeToPromote.get());
-                String response = addManager(
+
+                return addManager(
                         employeeToPromote.get().getFirstName(),
                         employeeToPromote.get().getLastName(),
                         newRole,
@@ -195,8 +199,6 @@ public class Organisation
                         newManagerNumber,
                         employeeToPromote.get().isOnHoliday()
                 );
-
-                return response;
             }
         }
         else
@@ -235,7 +237,7 @@ public class Organisation
 
     public Optional<Manager> getManager(final Long employeeNumber)
     { // test method helper
-        return managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
+        return managers.stream().filter(manager -> Objects.equals(manager.getEmployeeNumber(), employeeNumber)).findFirst();
     }
 
     private boolean checkEmployeeNumberIsUnique(final long employeeNumber) {
@@ -256,7 +258,7 @@ public class Organisation
     }
 
     private boolean checkTeamNameIsUnique(final String teamName) {
-        return teams.stream().noneMatch(team -> team.getTeamName() == teamName);
+        return teams.stream().noneMatch(team -> Objects.equals(team.getTeamName(), teamName));
     }
 
     private boolean checkTeamExists(final String newTeam) {
