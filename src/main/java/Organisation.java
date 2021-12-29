@@ -1,7 +1,8 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Organisation {
+public class Organisation
+{
 
     private static final String SUCCESS = "Success";
     private static final String EMPLOYEE_NON_UNIQUE_ID_ERROR = "Employee with that employee number already exists, please enter a unique value";
@@ -119,8 +120,8 @@ public class Organisation {
     }
 
     public Team getTeam(final long employeeNumber){
-        Optional<Team> maybeTeam = teams.stream().filter(team -> team.getTeamMembersIds().contains(employeeNumber)).findFirst();
-        return maybeTeam.get();
+        final Optional<Team> maybeTeam = teams.stream().filter(team -> team.getTeamMembersIds().contains(employeeNumber)).findFirst();
+        return maybeTeam.orElse(null);
     }
 
     public String goOnHoliday(final long employeeNumber) {
@@ -130,16 +131,19 @@ public class Organisation {
 
         // is manager
         if(managers.stream().anyMatch(manager -> manager.getEmployeeNumber() == employeeNumber)){
-            Optional<Manager> managerToGoOnHoliday = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
+            final Optional<Manager> managerToGoOnHoliday = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
             if(managerToGoOnHoliday.isPresent()){
-                Team team = getTeam(employeeNumber);
+                final Team team = getTeam(employeeNumber);
                 managerToGoOnHoliday.get().goingOnHoliday(team);
-                List<Long> teamToUpdateCurrentManagerOf = team.getTeamMembersIds();
-                for(Employee employee : employees){
-                    if(teamToUpdateCurrentManagerOf.contains(employee.getEmployeeNumber())){
-                        employee.setManagerNumber(team.getCurrentManager());
-                    }
-                }
+                final List<Long> teamToUpdateCurrentManagerOf = team.getTeamMembersIds();
+
+                employees
+                        .stream()
+                        .filter(
+                                employee -> teamToUpdateCurrentManagerOf.contains(employee.getEmployeeNumber())
+                        )
+                        .forEach(employee -> employee.setManagerNumber(team.getCurrentManager()));
+
             }
         } else {
             setEmployeeHoliday(employeeNumber, true);
@@ -154,16 +158,18 @@ public class Organisation {
         }
 
         if(managers.stream().anyMatch(manager -> manager.getEmployeeNumber() == employeeNumber)){
-            Optional<Manager> managerReturningFromHoliday = managers.stream().filter(managers -> managers.getEmployeeNumber() == employeeNumber).findFirst();
+            final Optional<Manager> managerReturningFromHoliday = managers.stream().filter(managers -> managers.getEmployeeNumber() == employeeNumber).findFirst();
             if(managerReturningFromHoliday.isPresent()){
-                Team team = getTeam(employeeNumber);
+                final Team team = getTeam(employeeNumber);
                 managerReturningFromHoliday.get().returningFromHoliday(team);
-                List<Long> teamToUpdateCurrentManagerOf = team.getTeamMembersIds();
-                for(Employee employee : employees){
-                    if(teamToUpdateCurrentManagerOf.contains(employee.getEmployeeNumber())){
-                        employee.setManagerNumber(team.getCurrentManager());
-                    }
-                }
+                final List<Long> teamToUpdateCurrentManagerOf = team.getTeamMembersIds();
+
+                employees
+                        .stream()
+                        .filter(
+                                employee -> teamToUpdateCurrentManagerOf.contains(employee.getEmployeeNumber())
+                        )
+                        .forEach(employee -> employee.setManagerNumber(team.getCurrentManager()));
             }
         } else { setEmployeeHoliday(employeeNumber, false); }
 
@@ -175,7 +181,7 @@ public class Organisation {
         if(isEmployee)
         {
             // Optional is null safe
-            Optional<Employee> employeeToPromote = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
+            final Optional<Employee> employeeToPromote = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
             if(!employeeToPromote.isEmpty())
             {
                 employees.remove(employeeToPromote.get());
@@ -195,7 +201,7 @@ public class Organisation {
         }
         else
         {
-            Optional<Manager> managerToPromote = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
+            final Optional<Manager> managerToPromote = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
             if(managerToPromote.isPresent())
             {
                 if(managerToPromote.get().getRole().equals(ROLE_NAMES_ENUM.VicePresident.name()))
@@ -204,7 +210,7 @@ public class Organisation {
                 }
                 else if(managerToPromote.get().getRole().equals(ROLE_NAMES_ENUM.Manager.name()))
                 {
-                    List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
+                    final List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
                     if(!(managerList.size() >= 2) ||!(getNoOfSubordinateEmployees(managerList) >= 20))
                     {
                         return "Manager is not able to be promoted to Director";
@@ -212,7 +218,7 @@ public class Organisation {
                 }
                 else if(managerToPromote.get().getRole().equals(ROLE_NAMES_ENUM.Director.name()))
                 {
-                    List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
+                    final List<Long> managerList = getNoOfSubordinateManagers(managerToPromote.get().getEmployeeNumber());
                     if(!(managerList.size() >= 4) ||!(getNoOfSubordinateEmployees(managerList) >= 40))
                     {
                         return "Director is not able to be promoted to Vice President";
@@ -229,9 +235,7 @@ public class Organisation {
 
     public Optional<Manager> getManager(final Long employeeNumber)
     { // test method helper
-        Optional<Manager> maybeManager = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
-
-        return maybeManager;
+        return managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
     }
 
     private boolean checkEmployeeNumberIsUnique(final long employeeNumber) {
