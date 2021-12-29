@@ -119,8 +119,8 @@ public class Organisation {
     }
 
     public Team getTeam(final long employeeNumber){
-        List<Team> maybeTeam = teams.stream().filter(team -> team.getTeamMembersIds().contains(employeeNumber)).collect(Collectors.toList());
-        return maybeTeam.get(0);
+        Optional<Team> maybeTeam = teams.stream().filter(team -> team.getTeamMembersIds().contains(employeeNumber)).findFirst();
+        return maybeTeam.get();
     }
 
     public String goOnHoliday(final long employeeNumber) {
@@ -130,10 +130,10 @@ public class Organisation {
 
         // is manager
         if(managers.stream().anyMatch(manager -> manager.getEmployeeNumber() == employeeNumber)){
-            List<Manager> managerToGoOnHoliday = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).collect(Collectors.toList());
-            if(!managerToGoOnHoliday.isEmpty()){
+            Optional<Manager> managerToGoOnHoliday = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).findFirst();
+            if(managerToGoOnHoliday.isPresent()){
                 Team team = getTeam(employeeNumber);
-                managerToGoOnHoliday.get(0).goingOnHoliday(team);
+                managerToGoOnHoliday.get().goingOnHoliday(team);
                 List<Long> teamToUpdateCurrentManagerOf = team.getTeamMembersIds();
                 for(Employee employee : employees){
                     if(teamToUpdateCurrentManagerOf.contains(employee.getEmployeeNumber())){
@@ -154,10 +154,10 @@ public class Organisation {
         }
 
         if(managers.stream().anyMatch(manager -> manager.getEmployeeNumber() == employeeNumber)){
-            List<Manager> managerReturningFromHoliday = managers.stream().filter(manager -> manager.getEmployeeNumber() == employeeNumber).collect(Collectors.toList());
-            if(!managerReturningFromHoliday.isEmpty()){
+            Optional<Manager> managerReturningFromHoliday = managers.stream().filter(managers -> managers.getEmployeeNumber() == employeeNumber).findFirst();
+            if(managerReturningFromHoliday.isPresent()){
                 Team team = getTeam(employeeNumber);
-                managerReturningFromHoliday.get(0).returningFromHoliday(team);
+                managerReturningFromHoliday.get().returningFromHoliday(team);
                 List<Long> teamToUpdateCurrentManagerOf = team.getTeamMembersIds();
                 for(Employee employee : employees){
                     if(teamToUpdateCurrentManagerOf.contains(employee.getEmployeeNumber())){
@@ -170,11 +170,14 @@ public class Organisation {
         return SUCCESS;
     }
 
-    public String promote(final long employeeNumber, final long newManagerNumber, final boolean isEmployee, final String newRole) {
-        if(isEmployee){
+    public String promote(final long employeeNumber, final long newManagerNumber, final boolean isEmployee, final String newRole)
+    {
+        if(isEmployee)
+        {
             // Optional is null safe
             Optional<Employee> employeeToPromote = employees.stream().filter(employee -> employee.getEmployeeNumber() == employeeNumber).findFirst();
-            if(!employeeToPromote.isEmpty()){
+            if(!employeeToPromote.isEmpty())
+            {
                 employees.remove(employeeToPromote.get());
                 String response = addManager(
                         employeeToPromote.get().getFirstName(),
@@ -269,8 +272,6 @@ public class Organisation {
                 employeesInTeam.add(employee);
             }
         }
-
-//        List<Employee> employeesInTeam = employees.stream().filter(employee -> teamMembersIds.contains(employee)).collect(Collectors.toList());
 
         Date oldestEmployeeDate = new Date();
         Employee newManager = employeesInTeam.get(0);
