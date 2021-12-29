@@ -72,14 +72,14 @@ class OrganisationTest
     @Test
     void shouldReturnErrorWhenManagerEmployeeNumberIsNotUnique()
     {
-        final String result = organisation.addManager("", "", "Manager", new Date(), false, 1l, 3l, false);
+        final String result = organisation.addManager("Jane", "Doe", "Manager", new Date(), false, 1l, 3l, false);
         assertEquals(EMPLOYEE_NON_UNIQUE_ID_ERROR, result);
     }
 
     @Test
     void shouldReturnSuccessWhenManagerEmployeeNumberIsUnique()
     {
-        final String result = organisation.addManager("Manjooth", "Kler", "Manager", new Date(), false, 2l, 3l, false);
+        final String result = organisation.addManager("Jay", "Bird", "Manager", new Date(), false, 2l, 3l, false);
         assertEquals(SUCCESS, result);
     }
 
@@ -91,23 +91,23 @@ class OrganisationTest
     @Test
     void shouldNotAllowContractorsToBeManagers()
     {
-        final String result = organisation.addManager("Manjooth", "Kler", "Manager", new Date(), true, 2l, 3l, false);
+        final String result = organisation.addManager("Jay", "Bird", "Manager", new Date(), true, 2l, 3l, false);
         assertEquals("Contractors cannot be managers", result);
     }
 
     @Test
     void shouldReturnErrorWhenManagerRoleIsIncorrect()
     {
-        final String result = organisation.addManager("Manjooth", "Kler", "Employee", new Date(), true, 2l, 3l, false);
+        final String result = organisation.addManager("Jay", "Bird", "Employee", new Date(), true, 2l, 3l, false);
         assertEquals("Invalid role - enter correct role", result);
     }
 
     @Test
     void shouldReturnSuccessWhenManagerRoleIsCorrect()
     {
-        final String result1 = organisation.addManager("Manjooth", "Kler", "Manager", new Date(), false, 2l, 3l, false);
-        final String result2 = organisation.addManager("Manjooth", "Kler", "Director", new Date(), false, 22l, 3l, false);
-        final String result3 = organisation.addManager("Manjooth", "Kler", "VicePresident", new Date(), false, 23l, 3l, false);
+        final String result1 = organisation.addManager("Jay", "Bird", "Manager", new Date(), false, 2l, 3l, false);
+        final String result2 = organisation.addManager("John", "Bennett", "Director", new Date(), false, 22l, 3l, false);
+        final String result3 = organisation.addManager("Mike", "Newton", "VicePresident", new Date(), false, 23l, 3l, false);
 
         assertEquals(SUCCESS, result1);
         assertEquals(SUCCESS, result2);
@@ -253,7 +253,7 @@ class OrganisationTest
     @Test
     void shouldBeAbleToPromoteEmployee() // just promoting, we do not care about team etc
     {
-        organisation.addEmployee("Manjooth", "Kler", "Employee", new Date(), false, 6l, 3l, false);
+        organisation.addEmployee("Jay", "Bird", "Employee", new Date(), false, 6l, 3l, false);
         String result = organisation.promote(6l, 4l, true, "Manager");
 
         assertEquals(SUCCESS, result);
@@ -272,8 +272,8 @@ class OrganisationTest
     @Test
     void shouldReturnErrorIfManagerDoesNotHave2ManagersBelowThem()
     {
-        organisation.addManager("J", "B", "Manager", new Date(), false, 13l, 100l, false);
-        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("John", "Bennett", "Manager", new Date(), false, 13l, 100l, false);
+        organisation.addManager("Mike", "Newton", "Manager", new Date(), false, 14l, 13l, false);
         String response = organisation.promote(13l, 101l, false, "Director");
 
         assertEquals("Manager is not able to be promoted to Director", response);
@@ -282,9 +282,9 @@ class OrganisationTest
     @Test
     void shouldReturnErrorIfManagerDoesNotHave20EmployeesBelowThem()
     {
-        organisation.addManager("J", "B", "Manager", new Date(), false, 13l, 100l, false);
-        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
-        organisation.addManager("F", "G", "Manager", new Date(), false, 15l, 13l, false);
+        organisation.addManager("John", "Bennett", "Manager", new Date(), false, 13l, 100l, false);
+        organisation.addManager("Mike", "Newton", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("Vince", "Marlow", "Manager", new Date(), false, 15l, 13l, false);
 
         organisation.addTeam("teamThree",14l, Arrays.asList(30l, 31l, 32l));
 
@@ -295,9 +295,9 @@ class OrganisationTest
     @Test
     void shouldReturnSuccessAndPromoteIfManagerHas20DirectReportsAnd2ManagersBelowThem()
     {
-        organisation.addManager("J", "B", "Manager", new Date(), false, 13l, 100l, false);
-        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
-        organisation.addManager("F", "G", "Manager", new Date(), false, 15l, 13l, false);
+        organisation.addManager("John", "Bennett", "Manager", new Date(), false, 13l, 100l, false);
+        organisation.addManager("Mike", "Newton", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("Vince", "Marlow", "Manager", new Date(), false, 15l, 13l, false);
 
         organisation.addTeam("teamThree",14l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
         organisation.addTeam("teamFour",15l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
@@ -310,8 +310,8 @@ class OrganisationTest
     @Test
     void shouldReturnErrorIfDirectorDoesNotHave4ManagersBelowThem()
     {
-        organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
-        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("John", "Bennett", "Director", new Date(), false, 13l, 100l, false);
+        organisation.addManager("Mike", "Newton", "Manager", new Date(), false, 14l, 13l, false);
         String response = organisation.promote(13l, 101l, false, "VicePresident");
 
         assertEquals("Director is not able to be promoted to Vice President", response);
@@ -320,8 +320,8 @@ class OrganisationTest
     @Test
     void shouldReturnErrorIfManagerDoesNotHave40EmployeesBelowThem()
     {
-        organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
-        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("John", "Bennett", "Director", new Date(), false, 13l, 100l, false);
+        organisation.addManager("Mike", "Newton", "Manager", new Date(), false, 14l, 13l, false);
         String response = organisation.promote(13l, 101l, false, "VicePresident");
 
         assertEquals("Director is not able to be promoted to Vice President", response);
@@ -330,11 +330,11 @@ class OrganisationTest
     @Test
     void shouldReturnSuccessAndPromoteIfDirectorHas40DirectReportsAnd4ManagersBelowThem()
     {
-        organisation.addManager("J", "B", "Director", new Date(), false, 13l, 100l, false);
-        organisation.addManager("D", "E", "Manager", new Date(), false, 14l, 13l, false);
-        organisation.addManager("F", "G", "Manager", new Date(), false, 15l, 13l, false);
-        organisation.addManager("F", "G", "Manager", new Date(), false, 16l, 13l, false);
-        organisation.addManager("F", "G", "Manager", new Date(), false, 17l, 13l, false);
+        organisation.addManager("John", "Bennett", "Director", new Date(), false, 13l, 100l, false);
+        organisation.addManager("Mike", "Newton", "Manager", new Date(), false, 14l, 13l, false);
+        organisation.addManager("Vince", "Marlow", "Manager", new Date(), false, 15l, 13l, false);
+        organisation.addManager("Jane", "Doe", "Manager", new Date(), false, 16l, 13l, false);
+        organisation.addManager("Jay", "Bird", "Manager", new Date(), false, 17l, 13l, false);
 
         organisation.addTeam("teamThree",14l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
         organisation.addTeam("teamFour",15l, Arrays.asList(30l, 31l, 32l, 33l, 34l, 35l, 36l, 37l, 38l, 39l, 40l));
